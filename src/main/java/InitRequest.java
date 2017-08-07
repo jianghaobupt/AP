@@ -1,3 +1,5 @@
+import com.alibaba.fastjson.JSONObject;
+
 import java.util.Map;
 
 /**
@@ -9,7 +11,7 @@ public class InitRequest {
 
     }
 
-    public void initPost(String url, Map param){
+    public void initPost(String url, JSONObject body){
 
     }
 }
