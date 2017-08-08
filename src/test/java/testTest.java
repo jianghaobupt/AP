@@ -5,7 +5,7 @@ import org.junit.Test;
 /**
  * Created by jianghao on 2017/8/4.
  */
-public class testTest {
+public class testTest extends APIBaseCase{
 
     @Test
     public void testtest(){
