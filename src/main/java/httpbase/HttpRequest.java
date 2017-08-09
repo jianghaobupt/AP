@@ -1,7 +1,13 @@
+package httpbase;
+
+import com.alibaba.fastjson.JSONObject;
+import java.io.Serializable;
+import java.util.Map;
+
 /**
  * Created by mini on 2017/8/4.
  */
-public class HttpRequest implements Serializable{
+public class HttpRequest implements Serializable {
 
         private static final long serialVersionUID = 2525092903576788036L;
 
@@ -41,7 +47,6 @@ public class HttpRequest implements Serializable{
             this.body = body;
         }
 
-
         public int getTimeout() {
             return timeout;
         }
@@ -58,6 +63,4 @@ public class HttpRequest implements Serializable{
             this.charset = charset;
         }
 
-
-    }
 }
