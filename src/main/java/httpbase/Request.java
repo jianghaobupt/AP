@@ -1,6 +1,8 @@
 package httpbase;
 
 import com.alibaba.fastjson.JSONObject;
+import org.apache.http.Header;
+
 import java.io.Serializable;
 import java.util.Map;
 
@@ -22,6 +24,8 @@ public class Request implements Serializable {
         private int timeout = 3000;
 
         private String charset;
+
+        private String contenttype;
 
         public String getUrl() {
             return url;

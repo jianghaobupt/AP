@@ -13,8 +13,6 @@ public class Response implements Serializable {
 
         private static final long serialVersionUID = 2525092903576788036L;
 
-        private String url;
-
         private Map<String, String> header;
 
         private JSONObject body;
@@ -25,26 +23,23 @@ public class Response implements Serializable {
 
         private String charset;
 
-        public String getUrl() {
-            return url;
-        }
-
         public Map<String, String> getHeader() {
             return header;
         }
+        public void setHeader(Map<String, String> header) {
+        this.header = header;
+    }
 
         public JSONObject getbody() {
             return body;
         }
-
-        public int getTimeout() {
-            return timeout;
-        }
+        public void setbody(JSONObject body) {
+        this.body = body;
+    }
 
         public String getCharset() {
             return charset;
         }
-
         public void setCharset(String charset) {
             this.charset = charset;
         }
