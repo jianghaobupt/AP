@@ -1,6 +1,6 @@
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.junit.Test;
+import util.JsonHandler;
 
 /**
  * Created by jianghao on 2017/8/4.
