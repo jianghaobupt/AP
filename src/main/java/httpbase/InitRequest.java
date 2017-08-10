@@ -8,15 +8,15 @@ import java.util.Map;
  */
 public class InitRequest {
 
-    public static HttpRequest initRequest(String url){
-        HttpRequest request = initRequest(null,url);
+    public static Request initRequest(String url){
+        Request request = initRequest(null,url);
 
         return request;
     }
 
-    public static HttpRequest initRequest(String apiName, String url){
+    public static Request initRequest(String apiName, String url){
         Map<String, String> header = new HashMap<String ,String>();
-        HttpRequest request = new HttpRequest();
+        Request request = new Request();
 
         if(url != null){
             if(apiName != null){
