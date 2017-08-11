@@ -17,6 +17,8 @@ public class Request implements Serializable {
 
         private Map<String, String> header;
 
+        private Map<String, String> content;
+
         private JSONObject body;
 
         private String sign;
@@ -65,6 +67,13 @@ public class Request implements Serializable {
 
         public void setCharset(String charset) {
             this.charset = charset;
+        }
+
+        public void setContent(Map<String, String> content) {
+            this.content=content;
+        }
+        public Map<String, String> getContent() {
+            return content;
         }
 
 }

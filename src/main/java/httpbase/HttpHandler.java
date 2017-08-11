@@ -16,6 +16,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,7 +30,6 @@ public class HttpHandler {
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(request.getUrl());
-        httpPost.setEntity(new StringEntity(request.getbody().toString()));
 
         if(request.getHeader()!=null){
             Set<Map.Entry<String, String>> entries = request.getHeader().entrySet();
@@ -38,42 +38,56 @@ public class HttpHandler {
             }
         }
 
-        CloseableHttpResponse httpresponse = httpClient.execute(httpPost);
+        httpPost.setEntity(new StringEntity(request.getbody().toString()));
+
+        CloseableHttpResponse httpResponse = httpClient.execute(httpPost);
 //        System.out.println(response.getStatusLine().getStatusCode() + "\n");
-        if(httpresponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
-            HttpEntity entity = httpresponse.getEntity();
-            String responseContent = EntityUtils.toString(entity, "UTF-8");
+        if(httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
+            HttpEntity entity = httpResponse.getEntity();
+            String responseContent = EntityUtils.toString(entity, request.getCharset());
             System.out.println(responseContent);
-            response.setbody(JSONObject.parseObject(entity.getContent().toString()));
+            response.setbody(JSONObject.parseObject(responseContent));
         }
-        httpresponse.close();
+
+        httpResponse.close();
         httpClient.close();
 
-//        HttpClient client = new DefaultHttpClient();
-//        HttpPost post = new HttpPost(request.getUrl());
-//        Response response = new Response();
-//        try {
-//            StringEntity s = new StringEntity(request.getbody().toString());
-//            s.setContentEncoding(request.getCharset());
-//            s.setContentType("application/json");
-//            post.setEntity(s);
-//
-//            HttpResponse res = client.execute(post);
-//            if(res.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
-//                //todo:
-//
-//            }
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
         return response;
     }
 
-    public static Response get(Request request){
+    public static Response get(Request request) throws IOException {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
         Response response = new Response();
         //todo:
-        HttpGet httpGet = new HttpGet(request.getUrl());
 
+        String url = request.getUrl() + "?";
+        if(request.getContent()!=null){
+            Set<Map.Entry<String, String>>  entries= request.getHeader().entrySet();
+            for (Map.Entry<String, String> next : entries) {
+                url = url + next.getKey() + "=" + next.getValue() + "&" ;
+            }
+        }
+
+        HttpGet httpGet = new HttpGet(url);
+
+        if(request.getHeader()!=null){
+            Set<Map.Entry<String, String>> entries = request.getHeader().entrySet();
+            for (Map.Entry<String, String> next : entries) {
+                httpGet.addHeader(next.getKey(), next.getValue());
+            }
+        }
+
+        CloseableHttpResponse httpResponse = httpClient.execute(httpGet);
+
+        if(httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
+            HttpEntity entity = httpResponse.getEntity();
+            String responseContent = EntityUtils.toString(entity, request.getCharset());
+            System.out.println(responseContent);
+            response.setbody(JSONObject.parseObject(responseContent));
+        }
+
+        httpResponse.close();
+        httpClient.close();
 
         return response;
     }
