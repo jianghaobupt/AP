@@ -1,4 +1,8 @@
 import com.alibaba.fastjson.JSONObject;
+import httpbase.APIRequest;
+import httpbase.APIResponse;
+import httpbase.HttpHandler;
+import httpbase.InitRequest;
 import org.junit.Test;
 import util.JsonHandler;
 
@@ -25,5 +29,16 @@ public class testTest extends APIBaseCase{
         String jsonStr = json.toJSONString();
         System.out.println(jsonStr);
 
+    }
+
+
+    @Test
+    public void testPost() throws Exception {
+        String url="http://www.baidu.com";
+        APIRequest req = InitRequest.initRequest(url);
+        System.out.println(req.getUrl());
+        System.out.println(req.getHeader());
+        APIResponse res = HttpHandler.getExcute(req);
+        System.out.println(res.getStatus());
     }
 }

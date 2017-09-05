@@ -1,8 +1,6 @@
 package httpbase;
 
 import com.alibaba.fastjson.JSONObject;
-import org.apache.http.Header;
-
 import java.io.Serializable;
 import java.util.Map;
 

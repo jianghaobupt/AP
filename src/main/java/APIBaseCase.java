@@ -1,8 +1,10 @@
 
+import org.junit.Ignore;
 import org.testng.annotations.*;
 /**
  * Created by jianghao on 2017/8/3.
  */
+@Ignore
 public class APIBaseCase {
 
     String urlApp = "http://daily.52shangou.com/";

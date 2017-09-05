@@ -20,9 +20,8 @@ import java.util.Set;
  */
 public class HttpHandler {
 
-    public static APIResponse post(APIRequest APIRequest) throws Exception{
+    public static APIResponse postExcute(APIRequest APIRequest) throws Exception{
         APIResponse response = new APIResponse();
-
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(APIRequest.getUrl());
 
@@ -33,10 +32,11 @@ public class HttpHandler {
             }
         }
 
-        httpPost.setEntity(new StringEntity(APIRequest.getbody().toString()));
+        if(APIRequest.getbody() != null){
+            httpPost.setEntity(new StringEntity(APIRequest.getbody().toString()));
+        }
 
         CloseableHttpResponse httpResponse = httpClient.execute(httpPost);
-//        System.out.println(response.getStatusLine().getStatusCode() + "\n");
         if(httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
             HttpEntity entity = httpResponse.getEntity();
             String responseContent = EntityUtils.toString(entity, APIRequest.getCharset());
@@ -50,7 +50,7 @@ public class HttpHandler {
         return response;
     }
 
-    public static APIResponse get(APIRequest APIRequest) throws IOException {
+    public static APIResponse getExcute(APIRequest APIRequest) throws IOException {
         CloseableHttpClient httpClient = HttpClients.createDefault();
         APIResponse response = new APIResponse();
         //todo:
@@ -78,7 +78,16 @@ public class HttpHandler {
             HttpEntity entity = httpResponse.getEntity();
             String responseContent = EntityUtils.toString(entity, APIRequest.getCharset());
             System.out.println(responseContent);
-            response.setbody(JSONObject.parseObject(responseContent));
+            if(responseContent.startsWith("<!DOCTYPE html>")){
+                response.setHtml(responseContent);
+            }
+            if(responseContent.startsWith("{")){
+                response.setbody(JSONObject.parseObject(responseContent));
+            }
+            response.setStatus(httpResponse.getStatusLine().getStatusCode());
+        }else{
+            response.setStatus(httpResponse.getStatusLine().getStatusCode());
+            System.out.println("API calling failure !");
         }
 
         httpResponse.close();
