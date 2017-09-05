@@ -1,21 +1,21 @@
 package httpbase;
 
 import com.alibaba.fastjson.JSONObject;
-import org.apache.http.Header;
-
 import java.io.Serializable;
 import java.util.Map;
 
 /**
  * Created by mini on 2017/8/4.
  */
-public class Request implements Serializable {
+public class APIRequest implements Serializable {
 
         private static final long serialVersionUID = 2525092903576788036L;
 
         private String url;
 
         private Map<String, String> header;
+
+        private Map<String, String> content;
 
         private JSONObject body;
 
@@ -65,6 +65,13 @@ public class Request implements Serializable {
 
         public void setCharset(String charset) {
             this.charset = charset;
+        }
+
+        public void setContent(Map<String, String> content) {
+            this.content=content;
+        }
+        public Map<String, String> getContent() {
+            return content;
         }
 
 }

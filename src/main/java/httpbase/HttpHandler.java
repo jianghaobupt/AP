@@ -1,21 +1,17 @@
 package httpbase;
 
 import com.alibaba.fastjson.JSONObject;
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,56 +20,78 @@ import java.util.Set;
  */
 public class HttpHandler {
 
-    public static Response post(Request request) throws Exception{
-        Response response = new Response();
-
+    public static APIResponse postExcute(APIRequest APIRequest) throws Exception{
+        APIResponse response = new APIResponse();
         CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpPost httpPost = new HttpPost(request.getUrl());
-        httpPost.setEntity(new StringEntity(request.getbody().toString()));
+        HttpPost httpPost = new HttpPost(APIRequest.getUrl());
 
-        if(request.getHeader()!=null){
-            Set<Map.Entry<String, String>> entries = request.getHeader().entrySet();
+        if(APIRequest.getHeader()!=null){
+            Set<Map.Entry<String, String>> entries = APIRequest.getHeader().entrySet();
             for (Map.Entry<String, String> next : entries) {
                 httpPost.addHeader(next.getKey(), next.getValue());
             }
         }
 
-        CloseableHttpResponse httpresponse = httpClient.execute(httpPost);
-//        System.out.println(response.getStatusLine().getStatusCode() + "\n");
-        if(httpresponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
-            HttpEntity entity = httpresponse.getEntity();
-            String responseContent = EntityUtils.toString(entity, "UTF-8");
-            System.out.println(responseContent);
-            response.setbody(JSONObject.parseObject(entity.getContent().toString()));
+        if(APIRequest.getbody() != null){
+            httpPost.setEntity(new StringEntity(APIRequest.getbody().toString()));
         }
-        httpresponse.close();
+
+        CloseableHttpResponse httpResponse = httpClient.execute(httpPost);
+        if(httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
+            HttpEntity entity = httpResponse.getEntity();
+            String responseContent = EntityUtils.toString(entity, APIRequest.getCharset());
+            System.out.println(responseContent);
+            response.setbody(JSONObject.parseObject(responseContent));
+        }
+
+        httpResponse.close();
         httpClient.close();
 
-//        HttpClient client = new DefaultHttpClient();
-//        HttpPost post = new HttpPost(request.getUrl());
-//        Response response = new Response();
-//        try {
-//            StringEntity s = new StringEntity(request.getbody().toString());
-//            s.setContentEncoding(request.getCharset());
-//            s.setContentType("application/json");
-//            post.setEntity(s);
-//
-//            HttpResponse res = client.execute(post);
-//            if(res.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
-//                //todo:
-//
-//            }
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
         return response;
     }
 
-    public static Response get(Request request){
-        Response response = new Response();
+    public static APIResponse getExcute(APIRequest APIRequest) throws IOException {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        APIResponse response = new APIResponse();
         //todo:
-        HttpGet httpGet = new HttpGet(request.getUrl());
 
+        String url = APIRequest.getUrl() + "?";
+        if(APIRequest.getContent()!=null){
+            Set<Map.Entry<String, String>>  entries= APIRequest.getHeader().entrySet();
+            for (Map.Entry<String, String> next : entries) {
+                url = url + next.getKey() + "=" + next.getValue() + "&" ;
+            }
+        }
+
+        HttpGet httpGet = new HttpGet(url);
+
+        if(APIRequest.getHeader()!=null){
+            Set<Map.Entry<String, String>> entries = APIRequest.getHeader().entrySet();
+            for (Map.Entry<String, String> next : entries) {
+                httpGet.addHeader(next.getKey(), next.getValue());
+            }
+        }
+
+        CloseableHttpResponse httpResponse = httpClient.execute(httpGet);
+
+        if(httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
+            HttpEntity entity = httpResponse.getEntity();
+            String responseContent = EntityUtils.toString(entity, APIRequest.getCharset());
+            System.out.println(responseContent);
+            if(responseContent.startsWith("<!DOCTYPE html>")){
+                response.setHtml(responseContent);
+            }
+            if(responseContent.startsWith("{")){
+                response.setbody(JSONObject.parseObject(responseContent));
+            }
+            response.setStatus(httpResponse.getStatusLine().getStatusCode());
+        }else{
+            response.setStatus(httpResponse.getStatusLine().getStatusCode());
+            System.out.println("API calling failure !");
+        }
+
+        httpResponse.close();
+        httpClient.close();
 
         return response;
     }
